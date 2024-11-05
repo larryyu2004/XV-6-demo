@@ -1,20 +1,7 @@
 //pipe system call in C
 //shared by Parent and Child
 
-//For printf()
-#include <stdio.h>
-
-//For system calls -> fork(), pipe(), read() and write()
-#include <unistd.h>
-
-//For exit()
-#include <stdlib.h>
-
-//For strlen() to determine the length of string
-#include <string.h>
-
-//For wait() to synchronize parent and child processes
-#include <sys/wait.h>
+#include "user.h"
 
 //Define MSGSIZE with a value of 16
 #define MSGSIZE 16
@@ -36,7 +23,7 @@ int main(){
     //On failure, pipe(fd) returns -1;
     if(pipe(fd) == -1){
         //print error message
-        perror("pipe failed");
+        printf("pipe failed");
         //exit(1) -> indicating that the program exited due to a error
         exit(1);
     }
@@ -46,7 +33,7 @@ int main(){
 
     //pid == -1 indicates an error in creating the new process
     if(pid == -1){
-        perror("fork failed");
+        printf("fork failed");
         //exit(1) -> indicating that the program exited due to a error
         exit(1);
     }
@@ -57,17 +44,17 @@ int main(){
 
         //strlen("ping")+1, includes the null terminator (\0) so that child can receive complete string
         if(write(fd[1], "ping", strlen("ping")+1) == -1){
-            perror("write to pipe failed");
+            printf("write to pipe failed");
             exit(1);
         }
 
         //wait() -> let parent goes into blocking state
         //wait() will automatically returns control to the parent as soon as the child has exited
-        wait(NULL);
+        wait(0);
 
         //Read the child's response from pipe
         if(read(fd[0], buf, MSGSIZE) == -1){
-            perror("read from pipe failed");
+            printf("read from pipe failed");
             exit(1);
         }
         printf("Parent process received: %s\n", buf);
@@ -84,14 +71,14 @@ int main(){
 
         //Child reads the message sent by the parent from fd[0] into buf
         if(read(fd[0], buf, MSGSIZE) == -1){
-            perror("child read from pipe failed");
+            printf("child read from pipe failed");
             exit(1);
         };
         printf("Child process received: %s\n", buf);
 
         //Child writes the message into pipe
         if(write(fd[1], "pong", strlen("pong")+1) == -1){
-            perror("child write to pipe failed");
+            printf("child write to pipe failed");
             exit(1);
         }
 
