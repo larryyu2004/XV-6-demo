@@ -42,15 +42,27 @@ int main(){
     if(pid > 0){
         printf("I am Parent\n");
 
+        //close read
+        close(fd[0]);
+
         //strlen("ping")+1, includes the null terminator (\0) so that child can receive complete string
         if(write(fd[1], "ping", strlen("ping")+1) == -1){
             printf("write to pipe failed");
             exit(1);
         }
 
+        //close write
+        close(fd[1]);
+
         //wait() -> let parent goes into blocking state
         //wait() will automatically returns control to the parent as soon as the child has exited
         wait(0);
+
+        //Reopen the read
+        if(pipe(fd) == -1){
+            printf("pipe failed\n");
+            exit(1);
+        }
 
         //Read the child's response from pipe
         if(read(fd[0], buf, MSGSIZE) == -1){
@@ -59,15 +71,17 @@ int main(){
         }
         printf("Parent process received: %s\n", buf);
 
-        //fd[0] and fd[1] in the parent process are no longer used, close them
+        //fd[0] in the parent process are no longer used, close it.
         close(fd[0]);
-        close(fd[1]);
 
         exit(0);
 
     //Child
     }else{
         printf("I am child\n");
+        
+        //close write in the child
+        close(fd[1]);
 
         //Child reads the message sent by the parent from fd[0] into buf
         if(read(fd[0], buf, MSGSIZE) == -1){
@@ -76,14 +90,16 @@ int main(){
         };
         printf("Child process received: %s\n", buf);
 
+        //close write in the child
+        close(fd[0]);
+
         //Child writes the message into pipe
         if(write(fd[1], "pong", strlen("pong")+1) == -1){
             printf("child write to pipe failed");
             exit(1);
         }
 
-        //fd[0] and fd[1] in the child process are no longer used, close them
-        close(fd[0]);
+        //fd[1] in the child process are no longer used, close it
         close(fd[1]);
 
         exit(0);
