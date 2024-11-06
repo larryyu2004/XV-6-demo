@@ -67,6 +67,7 @@ int main(){
 
     //Child
     }else if(pid == 0){
+        wait(0);
         printf("I am child\n");
 
         //Child reads the message sent by the parent from fd[0] into buf
