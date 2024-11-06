@@ -58,12 +58,6 @@ int main(){
         //wait() will automatically returns control to the parent as soon as the child has exited
         wait(0);
 
-        //Reopen the read
-        if(pipe(fd) == -1){
-            printf("pipe failed\n");
-            exit(1);
-        }
-
         //Read the child's response from pipe
         if(read(fd[0], buf, MSGSIZE) == -1){
             printf("read from pipe failed");
