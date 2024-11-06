@@ -59,7 +59,7 @@ int main(){
         }
         printf("Parent process received: %s\n", buf);
 
-        //fd[0] in the parent process are no longer used, close it.
+        //fd[0] and fd[1] in the parent process are no longer used, close them
         close(fd[0]);
         close(fd[1]);
 
@@ -67,7 +67,9 @@ int main(){
 
     //Child
     }else if(pid == 0){
-        wait(0);
+        
+        //In case parent and child print information simultaneously
+        sleep(1);
         printf("I am child\n");
 
         //Child reads the message sent by the parent from fd[0] into buf
@@ -83,7 +85,7 @@ int main(){
             exit(1);
         }
 
-        //fd[1] in the child process are no longer used, close it
+        //fd[1] and f[0] in the child process are no longer used, close them
         close(fd[0]);
         close(fd[1]);
         exit(0);
