@@ -40,7 +40,8 @@ int main(){
     
     //Parent
     if(pid > 0){
-        printf("I am Parent\n");
+
+        //printf("I am Parent\n");
 
         //strlen("ping")+1, includes the null terminator (\0) so that child can receive complete string
         if(write(fd[1], "ping", strlen("ping")+1) == -1){
@@ -57,7 +58,7 @@ int main(){
             printf("read from pipe failed");
             exit(1);
         }
-        printf("%d: received: %s", getpid(), buf);
+        printf("%d: received: %s\n", getpid(), buf);
 
         //fd[0] and fd[1] in the parent process are no longer used, close them
         close(fd[0]);
@@ -70,14 +71,15 @@ int main(){
         
         //In case parent and child print information simultaneously
         sleep(1);
-        printf("I am child\n");
+
+        //printf("I am child\n");
 
         //Child reads the message sent by the parent from fd[0] into buf
         if(read(fd[0], buf, MSGSIZE) == -1){
             printf("child read from pipe failed");
             exit(1);
         };
-        printf("%d: received: %s", getpid(), buf);
+        printf("%d: received: %s\n", getpid(), buf);
 
         //Child writes the message into pipe
         if(write(fd[1], "pong", strlen("pong")+1) == -1){
