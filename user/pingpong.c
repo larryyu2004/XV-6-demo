@@ -58,7 +58,7 @@ int main(){
             printf("read from pipe failed");
             exit(1);
         }
-        printf("%d: received pong", getpid());
+        printf("%d: received pong\n", getpid());
 
         //fd[0] and fd[1] in the parent process are no longer used, close them
         close(fd[0]);
@@ -79,7 +79,7 @@ int main(){
             printf("child read from pipe failed");
             exit(1);
         };
-        printf("%d: received ping", getpid());
+        printf("%d: received ping\n", getpid());
 
         //Child writes the message into pipe
         if(write(fd[1], "pong", strlen("pong")+1) == -1){
