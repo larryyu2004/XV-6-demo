@@ -9,10 +9,12 @@
 
 int main(){
 
-    //Store 2 file descriptors 
-    //fd[0] will be read end of the pipe
-    //fd[1] will be write end of the pipe
+    //Two pipes
+    //ParentToChild[0] will be read end of the pipe
+    //ParentToChild[1] will be write end of the pipe
     int ParentToChild[2];
+    //ChildToParent[0] will be read end of the pipe
+    //ChildToParent[1] will be write end of the pipe
     int ChildToParent[2];
 
     //buf is for storing messages read from the pipe
@@ -42,10 +44,9 @@ int main(){
     //Parent
     if(pid > 0){
         
+        //ParentToChild[0] and ChildToParent[1] in the parent process are no longer used, close them
         close(ParentToChild[0]);
         close(ChildToParent[1]);
-
-        //printf("I am Parent\n");
 
         //strlen("ping")+1, includes the null terminator (\0) so that child can receive complete string
         if(write(ParentToChild[1], "ping", strlen("ping")+1) == -1){
@@ -64,15 +65,16 @@ int main(){
         }
         printf("%d: received pong\n", getpid());
 
-        //fd[0] and fd[1] in the parent process are no longer used, close them
-        close(ParentToChild[0]);
-        close(ChildToParent[1]);
+        //ParentToChild[1] and ChildToParent[0] in the parent process are no longer used, close them
+        close(ParentToChild[1]);
+        close(ChildToParent[0]);
 
         exit(0);
 
     //Child
     }else if(pid == 0){
         
+        //ParentToChild[1] and ChildToParent[0] in the parent process are no longer used, close them
         close(ParentToChild[1]);
         close(ChildToParent[0]);
 
@@ -91,7 +93,7 @@ int main(){
             exit(1);
         }
 
-        //fd[1] and f[0] in the child process are no longer used, close them
+        //ParentToChild[0] and ChildToParent[1] in the parent process are no longer used, close them
         close(ParentToChild[0]);
         close(ChildToParent[1]);
         exit(0);
